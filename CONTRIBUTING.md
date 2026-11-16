@@ -36,9 +36,9 @@ history.
    `test(security): verify cross-case requests are denied before query execution`.
    Do not include unrelated files or secrets in the commit.
 
-Application test/build commands will be documented in the README when the
-corresponding modules exist. The initial repository contains no application code
-or application test suite.
+Application setup, test, build, and migration commands are documented in
+[README.md](README.md). Run the PostgreSQL integration check when changing the
+schema, and browser tests when changing the connected React/API workflow.
 
 ## Review before every push
 
