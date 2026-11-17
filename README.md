@@ -94,6 +94,10 @@ uses password authentication. It does not install a Windows service. With an
 existing PostgreSQL installation, create the database/user yourself, configure
 `.env`, and skip the portable helper.
 
+For an already initialized checkout, starting PostgreSQL and applying an already
+current migration does not require reseeding. Preserve existing `.env` values
+and database records. Do not run reset commands as part of routine startup.
+
 In terminal 1:
 
 ```powershell
@@ -113,6 +117,21 @@ receives database credentials. Stop each server with Ctrl+C, then stop PostgreSQ
 .\.venv\Scripts\python.exe scripts/local_postgres.py stop
 ```
 
+Keep the two server terminals open while using the app. Uvicorn stays running
+until its process receives a stop signal; closing its terminal or pressing
+Ctrl+C causes the normal "Shutting down" / "Application shutdown complete"
+sequence. With `--reload`, saving backend code also produces a shutdown/startup
+sequence as the worker is replaced. The previous verification session explicitly
+stopped its servers; it did not uncover an automatic application shutdown bug.
+
+To verify independently while both terminals remain open:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/health
+Invoke-RestMethod http://127.0.0.1:8000/api/v1/health/ready
+Invoke-RestMethod http://127.0.0.1:5173/api/v1/demo/overview
+```
+
 ## Verify changes
 
 Fast tests use isolated SQLite databases. The optional PostgreSQL test uses a
@@ -125,16 +144,27 @@ temporary schema and rolls it back without modifying the demo database.
 npm.cmd --prefix frontend run build
 ```
 
-With PostgreSQL running:
+With existing PostgreSQL data, use the non-destructive verification command:
 
 ```powershell
-$env:RUN_POSTGRES_TESTS = '1'
-.\.venv\Scripts\python.exe -m pytest -c backend/pyproject.toml tests -q
-Remove-Item Env:RUN_POSTGRES_TESTS
+$env:RUN_POSTGRES_READONLY_TESTS = '1'
+.\.venv\Scripts\python.exe -m pytest -c backend/pyproject.toml tests --ignore=tests/integration/test_postgres.py -q
+Remove-Item Env:RUN_POSTGRES_READONLY_TESTS
 Push-Location backend
 ..\.venv\Scripts\python.exe -m alembic check
 Pop-Location
 ```
+
+These PostgreSQL tests enforce read-only transactions, check schema/model drift,
+and allow `upgrade head` only when the database is already at the expected head.
+They do not seed, reset, drop tables, or apply pending migrations. The original
+`tests/integration/test_postgres.py` remains intact: it explicitly runs a
+downgrade/re-upgrade in a temporary schema and is excluded above because that
+operation requires separate authorization. Its previous results are historical,
+not a substitute for a fresh authorized run.
+
+There is no frontend lint script configured. `npm.cmd --prefix frontend run
+typecheck` and the production build check TypeScript; Ruff checks Python.
 
 Browser tests require the seeded database and API on port 8000. Playwright starts
 Vite if port 5173 is unused. Use the ignored browser cache:
@@ -165,6 +195,27 @@ Pop-Location
 
 Only `case_demo_001` and its related records are reset. Other cases are preserved.
 Seed/reset refuse production mode or disabled demo mode.
+Reset is destructive within that case and requires explicit owner authorization;
+it was not run against the existing database during the stabilization review.
+
+## Environment settings
+
+| Variable | Purpose / local behavior |
+| --- | --- |
+| `APP_ENV` | `development`, `test`, or `production`; production rejects demo access and disables API docs |
+| `DEMO_MODE` | Enables a fixed demo investigator; defaults to false in code and is explicitly true in the example |
+| `POSTGRES_HOST`, `POSTGRES_PORT` | Database address; port must be 1-65535; Compose overrides these internally to `db:5432` |
+| `POSTGRES_DB`, `POSTGRES_USER` | Existing database and connecting role |
+| `POSTGRES_PASSWORD` | Local secret generated into ignored `.env`; whitespace-only values are invalid in production |
+| `CORS_ORIGINS` | JSON array of allowed browser origins; only GET and Content-Type are currently required |
+| `API_PROXY_TARGET` | Vite's server-side backend target, normally `http://127.0.0.1:8000` |
+| `RUN_POSTGRES_READONLY_TESTS` | Test-process-only opt-in for non-destructive PostgreSQL verification |
+| `PLAYWRIGHT_BROWSERS_PATH` | Test-process-only path to the browser cache |
+
+No database credentials are exposed through Vite's client environment. Invalid
+backend settings fail with validation messages that omit input values. The demo
+identity must exist with the `investigator` role; a different stored role is
+denied before case or transaction queries run. This is not production login/RBAC.
 
 ## Structure
 
@@ -186,6 +237,9 @@ directories, not nonfunctional placeholder endpoints.
 
 See [architecture](docs/architecture.md), [API contracts](docs/api-contracts.md),
 and [verification results](docs/verification.md) for current behavior and limits.
+The current [stabilization report](docs/stabilization-report.md) records checks,
+fixes, and unverified items; the [Phase 2 readiness report](docs/phase2-readiness.md)
+sets the next implementation order without claiming unfinished features work.
 
 ## Version control
 

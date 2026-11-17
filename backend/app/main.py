@@ -20,8 +20,10 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
-        yield
-        database.dispose()
+        try:
+            yield
+        finally:
+            database.dispose()
 
     application = FastAPI(
         title="FraudSentinel API",

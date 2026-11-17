@@ -20,6 +20,8 @@ def overview(
     user = session.get(User, user_id)
     if user is None:
         raise HTTPException(status_code=409, detail="Demo data has not been seeded")
+    if user.role != "investigator":
+        raise HTTPException(status_code=403, detail="Demo investigator access is required")
     owned_cases = select(Case.case_id).where(Case.owner_id == user_id)
     scoped_transactions = select(Transaction.transaction_id).where(
         Transaction.case_id.in_(owned_cases)

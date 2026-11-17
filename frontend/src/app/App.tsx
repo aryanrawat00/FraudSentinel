@@ -10,9 +10,9 @@ interface State {
   error?: string;
 }
 
-const money = new Intl.NumberFormat('en-IN', {
-  style: 'currency', currency: 'INR', maximumFractionDigits: 2,
-});
+const formatMoney = (amount: string, currency: string) => new Intl.NumberFormat('en-IN', {
+  style: 'currency', currency, minimumFractionDigits: 2, maximumFractionDigits: 2,
+}).format(Number(amount));
 const time = new Intl.DateTimeFormat('en-IN', {
   timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
   hour12: false,
@@ -113,14 +113,14 @@ export default function App() {
                     <td><strong className="mono">{transaction.transaction_id}</strong><span className="table-secondary">{transaction.customer_id}</span></td>
                     <td>{time.format(new Date(transaction.occurred_at))}</td>
                     <td className="mono device">{transaction.device_id.replace('device_demo_', '')}</td>
-                    <td className="amount money">{money.format(Number(transaction.amount))}</td>
+                    <td className="amount money">{formatMoney(transaction.amount, transaction.currency)}</td>
                     <td><span className="review-status">Not assessed</span></td>
                   </tr>
                 ))}</tbody>
               </table>
             </div>
           ) : <div className="empty-state"><span aria-hidden="true">▤</span><h3>{loading ? 'Loading workspace…' : 'No transactions to display'}</h3><p>{error ? 'Resolve the connection above to load data from the backend.' : 'Run the synthetic seed to populate your development workspace.'}</p></div>}
-          <div className="table-footer"><span>{overview ? `${overview.recent_transactions.length} of ${overview.transaction_count} records` : 'Waiting for data'}</span><span>All amounts in INR · All times in IST</span></div>
+          <div className="table-footer"><span>{overview ? `${overview.recent_transactions.length} of ${overview.transaction_count} records` : 'Waiting for data'}</span><span>Amounts in recorded currency · All times in IST</span></div>
         </section>
 
         <aside className="foundation-note"><span className="note-icon" aria-hidden="true">i</span><div><h2>Built for investigation, with human judgment.</h2><p>This foundation uses synthetic records only. Detection, agent authorization, and evidence-linked reports are upcoming modules. A suspicious transaction is a review signal, never a confirmed fraud finding.</p></div></aside>

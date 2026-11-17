@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import SecretStr, model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -9,12 +9,16 @@ ROOT = Path(__file__).resolve().parents[3]
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=ROOT / ".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=ROOT / ".env",
+        extra="ignore",
+        hide_input_in_errors=True,
+    )
 
     app_env: Literal["development", "test", "production"] = "development"
     demo_mode: bool = False
     postgres_host: str = "127.0.0.1"
-    postgres_port: int = 5432
+    postgres_port: int = Field(default=5432, ge=1, le=65535)
     postgres_db: str = "fraudsentinel"
     postgres_user: str = "fraudsentinel"
     postgres_password: SecretStr = SecretStr("")
@@ -25,7 +29,7 @@ class Settings(BaseSettings):
         if self.app_env == "production":
             if self.demo_mode:
                 raise ValueError("DEMO_MODE must be disabled in production")
-            if not self.postgres_password.get_secret_value():
+            if not self.postgres_password.get_secret_value().strip():
                 raise ValueError("POSTGRES_PASSWORD is required in production")
             if "*" in self.cors_origins:
                 raise ValueError("Production CORS origins must be explicit")

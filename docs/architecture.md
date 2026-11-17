@@ -24,11 +24,17 @@ only includes cases owned by that identity; caller-supplied user/role headers
 cannot select another analyst. This is a local demonstration identity, not a
 production login system. Demo mode is disabled by default and rejected when
 `APP_ENV=production`. Compose exposes services only on loopback.
+The stored demo user must also retain the `investigator` role. Other roles are
+rejected before case/transaction queries. No role is accepted from client headers.
 
 Production settings require a nonempty database password, reject wildcard CORS,
 and disable interactive API documentation. This foundation still needs proper
 authentication, authorization, TLS, secret management, monitoring, and deployment
 hardening before production use.
+The current portable local PostgreSQL role is a superuser, as created by the
+initial development cluster. Its privileges and credentials were not changed
+during stabilization. Before deployment, provision separate migration and
+least-privilege runtime roles and move away from the local demo identity.
 
 No agent tool endpoints, LLM calls, direct agent database access, or financial
 actions exist in Phase 1. Policy and agent folders reserve the locations for the
@@ -43,6 +49,11 @@ the configured and tested database. Docker image digest pinning belongs with
 deployment hardening. The optional portable Windows PostgreSQL helper supports
 local testing without Docker; its binaries, data, password, logs, and browser
 downloads remain ignored.
+
+The frontend now validates runtime API responses as well as using TypeScript
+interfaces. Uvicorn's lifespan releases the engine in a `finally` block even
+when shutdown encounters an exception. Neither change introduces a new service,
+dependency, data migration, or agent capability.
 
 References: [FastAPI containers](https://fastapi.tiangolo.com/deployment/docker/),
 [SQLAlchemy psycopg](https://docs.sqlalchemy.org/en/20/dialects/postgresql.html#module-sqlalchemy.dialects.postgresql.psycopg),

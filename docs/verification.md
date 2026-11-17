@@ -1,5 +1,9 @@
 # Phase 1 verification - 16 November 2026
 
+This is the historical foundation verification record. See the
+[17 November stabilization report](stabilization-report.md) for the current
+results, data-preservation checks, and explicitly blocked downgrade test.
+
 Verified on Windows using Python 3.12.14, Node.js 26.3.1, and PostgreSQL 16.15.
 All database records used for these checks were synthetic.
 
