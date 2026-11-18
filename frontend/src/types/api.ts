@@ -14,12 +14,12 @@ export interface Readiness {
 export interface Transaction {
   transaction_id: string;
   case_id: string;
-  customer_id: string;
+  customer_id: string | null;
   amount: string;
   currency: string;
   occurred_at: string;
-  device_id: string;
-  beneficiary_id: string;
+  device_id: string | null;
+  beneficiary_id: string | null;
 }
 
 export interface Overview {

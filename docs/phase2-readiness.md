@@ -1,5 +1,11 @@
 # Phase 2 readiness - 17 November 2026
 
+This records the Phase 1 baseline before Phase 2 implementation. See the
+[current plan](phase2-plan.md) and [Milestone 1 review](phase2-milestone1.md) for
+the activated Milestone 1 baseline. Current milestones 2–4 implementation and
+verification are recorded in [the operating guide](phase2-milestones234.md) and
+[final review](phase2-review-results.md); their active migration gate is still pending.
+
 ## 1. Decision
 
 The implemented Phase 1 foundation is ready for controlled local Phase 2

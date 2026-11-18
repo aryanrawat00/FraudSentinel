@@ -1,7 +1,9 @@
 from app.models.records import (
+    Account,
     AgentRequest,
     AuditEvent,
     Case,
+    CaseAccount,
     Evidence,
     PolicyDecision,
     RiskAssessment,
@@ -10,9 +12,11 @@ from app.models.records import (
 )
 
 __all__ = [
+    "Account",
     "AgentRequest",
     "AuditEvent",
     "Case",
+    "CaseAccount",
     "Evidence",
     "PolicyDecision",
     "RiskAssessment",

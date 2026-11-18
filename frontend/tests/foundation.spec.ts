@@ -122,3 +122,19 @@ test('non-JSON upstream responses are reported without exposing their body', asy
   await expect(page.getByRole('alert')).not.toContainText('Private upstream diagnostics');
   await expect(page.getByTestId('transaction-count')).toHaveText('—');
 });
+
+test('missing optional context is labeled unavailable without inventing data', async ({ page }) => {
+  await page.route('**/api/v1/demo/overview', async (route) => {
+    const response = await route.fetch();
+    const body = await response.json();
+    Object.assign(body.recent_transactions[0], {
+      customer_id: null, device_id: null, beneficiary_id: null,
+    });
+    await route.fulfill({ response, json: body });
+  });
+  await page.goto('/');
+  await expect(page.getByTestId('transaction-count')).toHaveText('6');
+  await expect(page.getByText('Customer unavailable', { exact: true })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'Unavailable', exact: true })).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+});

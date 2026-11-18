@@ -9,12 +9,12 @@ class TransactionSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     transaction_id: str
     case_id: str
-    customer_id: str
+    customer_id: str | None
     amount: Decimal
     currency: str
     occurred_at: datetime
-    device_id: str
-    beneficiary_id: str
+    device_id: str | None
+    beneficiary_id: str | None
 
     @field_validator("occurred_at")
     @classmethod

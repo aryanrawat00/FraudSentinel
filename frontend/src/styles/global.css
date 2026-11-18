@@ -1,4 +1,21 @@
 :root { font-family: 'Segoe UI', system-ui, sans-serif; color: #19333e; background: #f4f6f5; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+.workspace-tabs, .actions, .risk-distribution { display: flex; flex-wrap: wrap; gap: 10px; margin-block: 20px; }
+.workspace-content { border: 0; padding: 0; margin: 0; min-width: 0; }
+.workspace-tabs button[aria-pressed=true] { background: #234e45; color: white; }
+.workspace-panel { background: white; border: 1px solid #dce4df; border-radius: 9px; padding: 25px; margin-block: 20px; min-width: 0; }
+.workspace-panel h2 { font-size: 20px; }.workspace-panel h3 { font-size: 16px; }
+.investigation-workspace small { display: block; font-size: 11px; color: #506c61; margin-block: 5px; overflow-wrap: anywhere; }
+.investigation-workspace td { white-space: normal; overflow-wrap: anywhere; min-width: 130px; }
+.investigation-workspace form { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(220px,100%),1fr)); gap: 15px; padding-block: 20px; border-top: 1px solid #e1e9e3; margin-top: 15px; }
+.investigation-workspace label { display: flex; flex-direction: column; gap: 8px; font-size: 13px; min-width: 0; }
+.investigation-workspace input, .investigation-workspace textarea, .investigation-workspace select { width: 100%; min-width: 0; border: 1px solid #9db4a8; border-radius: 5px; padding: 10px; font: inherit; color: inherit; background: #fff; }
+.investigation-workspace textarea { min-height: 80px; resize: vertical; }.investigation-workspace summary { cursor: pointer; font-weight: 600; }
+.finding { padding: 18px; border-left: 3px solid #6e9b86; background: #f5f8f5; margin-block: 16px; overflow-wrap: anywhere; }
+.risk { display: inline-block; padding: 5px 9px; border-radius: 4px; background: #eef3ee; text-transform: capitalize; }.risk.high, .risk.critical { background: #f9e5db; color: #874c2b; }.risk.medium { background: #f7efd9; }.risk.low { background: #e3f0e8; }
+.case-row { width: 100%; justify-content: space-between; margin-block: 8px; text-align: left; }.case-row span { font-size: 12px; }
+.account-graph { display: block; width: min(100%,600px); margin: auto; }.timeline { padding-left: 24px; }.timeline li { padding-block: 12px; border-bottom: 1px solid #e0e8e1; }
+.report pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; padding: 16px; background: #f5f7f5; }.report section { margin-top: 25px; }
+@media(max-width:650px) { .topbar { flex-wrap: wrap; gap: 15px; }.topbar button { font-size: 10px; padding: 9px; }.workspace-panel { padding: 17px; }.case-row { flex-wrap: wrap; }.investigation-workspace .table-scroll { max-width: 100%; } }
 * { box-sizing: border-box; }
 body { margin: 0; }
 button, a { -webkit-tap-highlight-color: transparent; }

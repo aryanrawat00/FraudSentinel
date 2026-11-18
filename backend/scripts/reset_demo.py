@@ -2,7 +2,7 @@
 
 import argparse
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, or_, select
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
@@ -11,6 +11,7 @@ from app.models import (
     AgentRequest,
     AuditEvent,
     Case,
+    CaseAccount,
     Evidence,
     PolicyDecision,
     RiskAssessment,
@@ -28,11 +29,16 @@ def reset_demo(session: Session) -> None:
     session.execute(delete(PolicyDecision).where(PolicyDecision.request_id.in_(request_ids)))
     session.execute(delete(AuditEvent).where(AuditEvent.case_id == DEMO_CASE_ID))
     session.execute(delete(AgentRequest).where(AgentRequest.case_id == DEMO_CASE_ID))
-    session.execute(delete(Evidence).where(Evidence.case_id == DEMO_CASE_ID))
+    session.execute(
+        delete(Evidence).where(
+            or_(Evidence.case_id == DEMO_CASE_ID, Evidence.transaction_id.in_(transaction_ids))
+        )
+    )
     session.execute(
         delete(RiskAssessment).where(RiskAssessment.transaction_id.in_(transaction_ids))
     )
     session.execute(delete(Transaction).where(Transaction.case_id == DEMO_CASE_ID))
+    session.execute(delete(CaseAccount).where(CaseAccount.case_id == DEMO_CASE_ID))
     session.execute(delete(Case).where(Case.case_id == DEMO_CASE_ID))
     session.flush()
     session.expire_all()

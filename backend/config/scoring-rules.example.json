@@ -1,0 +1,24 @@
+{
+  "version": "rules_v1",
+  "history_days": 30,
+  "history_limit": 99,
+  "min_history": 5,
+  "amount_ratio": "5",
+  "burst_minutes": 10,
+  "burst_count": 4,
+  "fanout_count": 3,
+  "hour_distance": 3,
+  "weights": {
+    "AMOUNT_SPIKE": "25",
+    "RAPID_SEQUENCE": "25",
+    "UNUSUAL_HOUR": "15",
+    "NEW_DEVICE": "10",
+    "NEW_COUNTRY": "10",
+    "NEW_CHANNEL": "5",
+    "RAPID_FANOUT": "10"
+  },
+  "medium": "25",
+  "high": "50",
+  "critical": "75",
+  "temporal_group_cap": "35"
+}

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
 
     app_env: Literal["development", "test", "production"] = "development"
     demo_mode: bool = False
+    investigation_sandbox: bool = False
+    scoring_rules_path: Path | None = None
     postgres_host: str = "127.0.0.1"
     postgres_port: int = Field(default=5432, ge=1, le=65535)
     postgres_db: str = "fraudsentinel"
@@ -26,6 +28,8 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production(self):
+        if self.investigation_sandbox and (self.app_env == "production" or not self.demo_mode):
+            raise ValueError("Investigation sandbox requires non-production synthetic demo mode")
         if self.app_env == "production":
             if self.demo_mode:
                 raise ValueError("DEMO_MODE must be disabled in production")

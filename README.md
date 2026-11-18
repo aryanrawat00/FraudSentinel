@@ -1,5 +1,11 @@
 # FraudSentinel
 
+Phase 2 Milestone 1 is activated. Milestones 2–4 are implemented and verified in
+an isolated synthetic sandbox. The existing development database remains protected
+at migration `0002`; activation of `0003` requires separate approval. See the
+[implementation guide](docs/phase2-milestones234.md),
+[verification report](docs/phase2-review-results.md) and [plan](docs/phase2-plan.md).
+
 A secure AI-powered financial fraud detection and investigation platform.
 
 Phase 1 provides a React + TypeScript + Vite workspace connected to FastAPI,
@@ -8,9 +14,11 @@ development configuration. The workspace shows real API/database results, with
 loading, disconnected, unseeded, and retry states.
 
 Six synthetic transfers include INR 95,000 at 02:14 IST on an unseen device.
-**Transactions are not yet scored.** Scikit-learn detection, full authentication,
-OPA enforcement, agent tools, approvals, and investigation reports are later
-modules. A suspicious transaction is never automatically confirmed fraud.
+These original development records remain unchanged and unscored. The separate
+sandbox supports deterministic analysis, account relationships, evidence, cases,
+timelines and JSON reports. Full authentication, OPA enforcement, agent tools and
+human approvals remain later milestones. No trained ML model or confirmed-fraud
+verdict is claimed.
 
 ## Requirements
 

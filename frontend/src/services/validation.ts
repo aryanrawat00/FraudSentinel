@@ -36,11 +36,14 @@ export function isReadiness(value: unknown, status: number): value is Readiness 
 
 function isTransaction(value: unknown): value is Transaction {
   return isObject(value)
-    && isText(value.transaction_id) && isText(value.case_id) && isText(value.customer_id)
+    && isText(value.transaction_id) && isText(value.case_id)
+    && (value.customer_id === null || isText(value.customer_id))
     && typeof value.amount === 'string' && /^\d+(?:\.\d{1,2})?$/.test(value.amount)
     && Number.isFinite(Number(value.amount)) && Number(value.amount) > 0
     && typeof value.currency === 'string' && /^[A-Z]{3}$/.test(value.currency)
-    && isTimestamp(value.occurred_at) && isText(value.device_id) && isText(value.beneficiary_id);
+    && isTimestamp(value.occurred_at)
+    && (value.device_id === null || isText(value.device_id))
+    && (value.beneficiary_id === null || isText(value.beneficiary_id));
 }
 
 export function isOverview(value: unknown): value is Overview {

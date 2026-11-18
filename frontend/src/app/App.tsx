@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getHealth, getOverview, getReadiness } from '../services/api';
 import type { Health, Overview, Readiness } from '../types/api';
+import InvestigationWorkspace from './InvestigationWorkspace';
 
 interface State {
   loading: boolean;
@@ -19,6 +20,7 @@ const time = new Intl.DateTimeFormat('en-IN', {
 });
 
 export default function App() {
+  const [workspace, setWorkspace] = useState(window.location.hash === '#investigations');
   const [revision, setRevision] = useState(0);
   const [state, setState] = useState<State>({ loading: true });
 
@@ -58,10 +60,11 @@ export default function App() {
           <span className="brand-mark" aria-hidden="true">F<span> / </span>S</span>
           <span>Fraud<span className="brand-light">Sentinel</span></span>
         </a>
+        <button onClick={() => { setWorkspace(!workspace); window.location.hash = workspace ? '' : 'investigations'; }}>{workspace ? 'Foundation overview' : 'Open investigation workspace'}</button>
         <span className="environment"><span className="status-dot" />Development workspace</span>
       </header>
 
-      <main>
+      {workspace ? <InvestigationWorkspace /> : <main>
         <div className="heading-row">
           <div>
             <p className="eyebrow">INVESTIGATION WORKSPACE <span>/</span> PHASE 01</p>
@@ -98,7 +101,7 @@ export default function App() {
         <section className="metrics" aria-label="Workspace counts" aria-busy={loading}>
           <article><p>Transactions</p><strong data-testid="transaction-count">{overview?.transaction_count ?? '—'}</strong><span>Synthetic records in your cases</span></article>
           <article><p>Investigation cases</p><strong>{overview?.case_count ?? '—'}</strong><span>Assigned to the demo analyst</span></article>
-          <article><p>Risk assessments</p><strong>{overview?.assessment_count ?? '—'}</strong><span>Detection begins in the next phase</span></article>
+          <article><p>Risk assessments</p><strong>{overview?.assessment_count ?? '—'}</strong><span>Persisted assessments in this dataset</span></article>
         </section>
 
         <section className="transactions-panel" aria-labelledby="transactions-title">
@@ -110,11 +113,11 @@ export default function App() {
                 <thead><tr><th>Transaction / customer</th><th>Time (IST)</th><th>Device</th><th className="amount">Amount</th><th>Review status</th></tr></thead>
                 <tbody>{overview.recent_transactions.map((transaction) => (
                   <tr key={transaction.transaction_id}>
-                    <td><strong className="mono">{transaction.transaction_id}</strong><span className="table-secondary">{transaction.customer_id}</span></td>
+                    <td><strong className="mono">{transaction.transaction_id}</strong><span className="table-secondary">{transaction.customer_id ?? 'Customer unavailable'}</span></td>
                     <td>{time.format(new Date(transaction.occurred_at))}</td>
-                    <td className="mono device">{transaction.device_id.replace('device_demo_', '')}</td>
+                    <td className="mono device">{transaction.device_id?.replace('device_demo_', '') ?? 'Unavailable'}</td>
                     <td className="amount money">{formatMoney(transaction.amount, transaction.currency)}</td>
-                    <td><span className="review-status">Not assessed</span></td>
+                    <td><span className="review-status">See analysis workspace</span></td>
                   </tr>
                 ))}</tbody>
               </table>
@@ -123,8 +126,8 @@ export default function App() {
           <div className="table-footer"><span>{overview ? `${overview.recent_transactions.length} of ${overview.transaction_count} records` : 'Waiting for data'}</span><span>Amounts in recorded currency · All times in IST</span></div>
         </section>
 
-        <aside className="foundation-note"><span className="note-icon" aria-hidden="true">i</span><div><h2>Built for investigation, with human judgment.</h2><p>This foundation uses synthetic records only. Detection, agent authorization, and evidence-linked reports are upcoming modules. A suspicious transaction is a review signal, never a confirmed fraud finding.</p></div></aside>
-      </main>
+        <aside className="foundation-note"><span className="note-icon" aria-hidden="true">i</span><div><h2>Built for investigation, with human judgment.</h2><p>This overview uses synthetic records. The investigation workspace provides analysis and reports when its isolated sandbox is enabled. Agent authorization remains a later milestone. A suspicious transaction is a review signal, never a confirmed fraud finding.</p></div></aside>
+      </main>}
       <footer><span>FraudSentinel <span className="footer-divider">/</span> Foundation 0.1.0</span><span>{overview?.analyst_name ?? 'Local development'} · Synthetic data only</span></footer>
     </div>
   );

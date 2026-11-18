@@ -4,8 +4,9 @@ from app import models  # noqa: F401
 from app.core.config import Settings
 from app.db.base import Base
 from app.db.session import create_db_engine
+from app.models.workflow import WorkflowBase
 
-target_metadata = Base.metadata
+target_metadata = [Base.metadata, WorkflowBase.metadata]
 
 if context.is_offline_mode():
     context.configure(
